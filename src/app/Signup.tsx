@@ -1,23 +1,23 @@
-import React, { useState, useRef, useEffect } from "react";
+import { ResizeMode, Video } from "expo-av";
+import { useRouter } from "expo-router";
+import React, { useEffect, useRef, useState } from "react";
 import {
-  View,
+  Alert,
+  Animated,
+  Dimensions,
+  Image,
+  ScrollView,
+  StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
-  StyleSheet,
-  ScrollView,
-  Alert,
-  Image,
-  Dimensions,
-  Animated,
+  View,
 } from "react-native";
-import { Video, ResizeMode } from "expo-av";
-import { useRouter } from "expo-router";
 
 const { width } = Dimensions.get("window");
 
 /* 🔴 IMPORTANT: CHANGE THIS IP if Expo IP changes */
-const API_URL = "http://10.138.85.33:5000";
+const API_URL = "http://192.168.1.5:5000";
 
 export default function Signup() {
   const router = useRouter();

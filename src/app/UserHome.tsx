@@ -1,37 +1,46 @@
-import React, { useRef, useEffect, useState } from "react";
+
+import { MaterialIcons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { LinearGradient } from "expo-linear-gradient";
+import { useRouter } from "expo-router";
+import React, { useEffect, useRef, useState } from "react";
 import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
   Animated,
   Dimensions,
-  Platform,
-  StatusBar,
-  SafeAreaView,
   FlatList,
+  Platform,
+  SafeAreaView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
-import { useRouter } from "expo-router";
-import { MaterialIcons } from "@expo/vector-icons";
-import { LinearGradient } from "expo-linear-gradient";
+
+import ARCameraButton from "./ArCameraButton";
 
 const { width } = Dimensions.get("window");
 const CARD_WIDTH = (width - 60) / 2;
 
+/* DASHBOARD ITEM TYPE */
+type DashboardItem = {
+  title: string;
+  icon: keyof typeof MaterialIcons.glyphMap;
+  route: string;
+  gradient: readonly [string, string, ...string[]];
+};
+
 export default function UserHome() {
   const router = useRouter();
 
-  /* ===== STATES ===== */
   const [menuOpen, setMenuOpen] = useState(false);
   const [userEmail, setUserEmail] = useState("");
 
-  /* ===== ANIMATIONS ===== */
   const scaleAnim = useRef(new Animated.Value(1)).current;
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const menuAnim = useRef(new Animated.Value(-260)).current;
 
-  /* ===== LOAD USER EMAIL ===== */
+  /* LOAD USER EMAIL */
   useEffect(() => {
     const loadUserEmail = async () => {
       const email = await AsyncStorage.getItem("userEmail");
@@ -40,7 +49,7 @@ export default function UserHome() {
     loadUserEmail();
   }, []);
 
-  /* ===== ANIMATION EFFECTS ===== */
+  /* ANIMATION EFFECTS */
   useEffect(() => {
     Animated.loop(
       Animated.sequence([
@@ -70,32 +79,39 @@ export default function UserHome() {
       duration: 300,
       useNativeDriver: true,
     }).start();
+
     setMenuOpen(!menuOpen);
   };
 
-  /* ===== DASHBOARD ROUTES (FIXED FOR EXPO ROUTER) ===== */
-  const dashboardItems = [
+  /* DASHBOARD ITEMS */
+  const dashboardItems: DashboardItem[] = [
     { title: "Planets", icon: "public", route: "/planets", gradient: ["#0f2027", "#2c5364"] },
     { title: "Quiz", icon: "quiz", route: "/quiz", gradient: ["#1f1c2c", "#928dab"] },
     { title: "Chat", icon: "chat", route: "/chat", gradient: ["#141e30", "#243b55"] },
-    { title: "AR Camera", icon: "camera", route: "/ar", gradient: ["#0f0c29", "#302b63"] },
+    { title: "AR Camera", icon: "camera", route: "/ar", gradient: ["#241448", "#302b63"] },
     { title: "Progress", icon: "trending-up", route: "/progress", gradient: ["#134e5e", "#71b280"] },
   ];
 
-  const renderItem = ({ item }: any) => (
+  /* RENDER DASHBOARD CARD */
+  const renderItem = ({ item }: { item: DashboardItem }) => (
     <Animated.View style={{ opacity: fadeAnim }}>
-      <TouchableOpacity
-        onPress={() => {
-          router.push(item.route);
-        }}
-      >
-        <LinearGradient colors={item.gradient} style={styles.card}>
-          <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
-            <MaterialIcons name={item.icon as any} size={46} color="#fff" />
-          </Animated.View>
-          <Text style={styles.cardTitle}>{item.title}</Text>
-        </LinearGradient>
-      </TouchableOpacity>
+      {item.title === "AR Camera" ? (
+        <ARCameraButton />
+      ) : (
+        <TouchableOpacity
+          onPress={() => {
+            router.push(item.route as any);
+          }}
+        >
+          <LinearGradient colors={item.gradient} style={styles.card}>
+            <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
+              <MaterialIcons name={item.icon} size={46} color="#fff" />
+            </Animated.View>
+
+            <Text style={styles.cardTitle}>{item.title}</Text>
+          </LinearGradient>
+        </TouchableOpacity>
+      )}
     </Animated.View>
   );
 
@@ -109,6 +125,7 @@ export default function UserHome() {
           <TouchableOpacity onPress={toggleMenu}>
             <MaterialIcons name="menu" size={30} color="#fff" />
           </TouchableOpacity>
+
           <Text style={styles.welcome}>Welcome Explorer 🚀</Text>
         </View>
 
@@ -116,7 +133,7 @@ export default function UserHome() {
         <FlatList
           data={dashboardItems}
           renderItem={renderItem}
-          keyExtractor={(_, i) => i.toString()}
+          keyExtractor={(item) => item.title}
           numColumns={2}
           columnWrapperStyle={{ justifyContent: "space-between" }}
           contentContainerStyle={styles.grid}
@@ -129,12 +146,12 @@ export default function UserHome() {
       {/* SIDE MENU */}
       <Animated.View style={[styles.sideMenu, { transform: [{ translateX: menuAnim }] }]}>
         
-        {/* PROFILE SECTION */}
+        {/* PROFILE */}
         <TouchableOpacity
           style={styles.profileSection}
           onPress={() => {
             toggleMenu();
-            router.push("/Profile");
+            router.push("/Profile" as any);
           }}
         >
           <MaterialIcons name="account-circle" size={90} color="#00e5ff" />
@@ -149,10 +166,10 @@ export default function UserHome() {
             style={styles.menuItem}
             onPress={() => {
               toggleMenu();
-              router.push(item.route);
+              router.push(item.route as any);
             }}
           >
-            <MaterialIcons name={item.icon as any} size={24} color="#fff" />
+            <MaterialIcons name={item.icon} size={24} color="#fff" />
             <Text style={styles.menuText}>{item.title}</Text>
           </TouchableOpacity>
         ))}
@@ -162,7 +179,7 @@ export default function UserHome() {
           style={[styles.menuItem, { marginTop: "auto" }]}
           onPress={async () => {
             await AsyncStorage.clear();
-            router.replace("/login");
+            router.replace("/login" as any);
           }}
         >
           <MaterialIcons name="logout" size={24} color="#ff6b6b" />
@@ -173,7 +190,8 @@ export default function UserHome() {
   );
 }
 
-/* ===== STYLES ===== */
+/* STYLES */
+
 const styles = StyleSheet.create({
   header: {
     flexDirection: "row",
@@ -182,8 +200,17 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     gap: 15,
   },
-  welcome: { color: "#fff", fontSize: 24, fontWeight: "800" },
-  grid: { padding: 20 },
+
+  welcome: {
+    color: "#fff",
+    fontSize: 24,
+    fontWeight: "800",
+  },
+
+  grid: {
+    padding: 20,
+  },
+
   card: {
     width: CARD_WIDTH,
     height: 170,
@@ -192,23 +219,60 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 20,
   },
-  cardTitle: { color: "#fff", marginTop: 10, fontWeight: "700" },
+
+  cardTitle: {
+    color: "#fff",
+    marginTop: 10,
+    fontWeight: "700",
+  },
+
   overlay: {
     position: "absolute",
-    top: 0, bottom: 0, left: 0, right: 0,
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
     backgroundColor: "rgba(0,0,0,0.45)",
   },
+
   sideMenu: {
     position: "absolute",
-    top: 0, bottom: 0, left: 0,
+    top: 0,
+    bottom: 0,
+    left: 0,
     width: 260,
     backgroundColor: "rgba(2,6,23,0.98)",
     paddingTop: 80,
     paddingHorizontal: 20,
   },
-  profileSection: { alignItems: "center", marginBottom: 30 },
-  profileTitle: { color: "#fff", fontSize: 16, fontWeight: "700", marginTop: 6 },
-  profileEmail: { color: "#9fb3c8", fontSize: 13, marginTop: 4 },
-  menuItem: { flexDirection: "row", alignItems: "center", paddingVertical: 14 },
-  menuText: { color: "#fff", fontSize: 16, marginLeft: 14 },
+
+  profileSection: {
+    alignItems: "center",
+    marginBottom: 30,
+  },
+
+  profileTitle: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "700",
+    marginTop: 6,
+  },
+
+  profileEmail: {
+    color: "#9fb3c8",
+    fontSize: 13,
+    marginTop: 4,
+  },
+
+  menuItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 14,
+  },
+
+  menuText: {
+    color: "#fff",
+    fontSize: 16,
+    marginLeft: 14,
+  },
 });

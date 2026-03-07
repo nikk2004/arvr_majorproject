@@ -1,21 +1,21 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { ResizeMode, Video } from "expo-av";
+import { LinearGradient } from "expo-linear-gradient"; // ✨ Gradient for beauty
+import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
-  ScrollView,
   Alert,
+  Dimensions,
   Image,
   KeyboardAvoidingView,
   Platform,
-  Dimensions,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
-import { Video, ResizeMode } from "expo-av";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useRouter } from "expo-router";
-import { LinearGradient } from "expo-linear-gradient"; // ✨ Gradient for beauty
 
 const { width } = Dimensions.get("window");
 
@@ -31,7 +31,7 @@ export default function Login() {
     }
 
     try {
-      const response = await fetch("http://10.138.85.33:5000/api/auth/login", {
+      const response = await fetch("http://192.168.1.5:5000/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),

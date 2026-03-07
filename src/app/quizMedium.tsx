@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from "react";
-import { 
-  View, 
-  Text, 
-  TouchableOpacity, 
-  StyleSheet, 
-  ScrollView, 
-  Dimensions 
-} from "react-native";
+import { ResizeMode, Video } from "expo-av";
 import { useRouter } from "expo-router";
-import { Video, ResizeMode } from "expo-av";
+import React, { useEffect, useState } from "react";
+import {
+  Dimensions,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
+} from "react-native";
 import { mediumQuestions } from "./quizQuestions";
 
 const { height } = Dimensions.get("window");
@@ -24,13 +24,21 @@ export default function QuizMedium() {
   useEffect(() => {
     if (showScore) return;
     if (timer === 0) handleNext();
-    const interval = setInterval(() => setTimer(prev => prev - 1), 1000);
+
+    const interval = setInterval(() => {
+      setTimer(prev => prev - 1);
+    }, 1000);
+
     return () => clearInterval(interval);
   }, [timer, showScore]);
 
   const handleOptionPress = (option: string) => {
     setSelectedOption(option);
-    if (option === mediumQuestions[currentQ].answer) setScore(score + 1);
+
+    if (option === mediumQuestions[currentQ].answer) {
+      setScore(score + 1);
+    }
+
     setTimeout(() => handleNext(), 700);
   };
 
@@ -39,10 +47,12 @@ export default function QuizMedium() {
       setCurrentQ(currentQ + 1);
       setSelectedOption(null);
       setTimer(20);
-    } else setShowScore(true);
+    } else {
+      setShowScore(true);
+    }
   };
 
-  const backgroundVideo = require("../assets/images/videos/video2.mp4"); // ✅ Your video
+  const backgroundVideo = require("../assets/images/videos/video2.mp4");
 
   if (showScore) {
     return (
@@ -53,16 +63,20 @@ export default function QuizMedium() {
           resizeMode={ResizeMode.COVER}
           shouldPlay
           isLooping
-          muted
+          isMuted
         />
+
         <View style={styles.overlay} />
+
         <View style={styles.scoreContainer}>
           <Text style={styles.scoreText}>Medium Quiz Completed!</Text>
+
           <Text style={styles.scoreText}>
             Your Score: {score} / {mediumQuestions.length}
           </Text>
-          <TouchableOpacity 
-            style={styles.button} 
+
+          <TouchableOpacity
+            style={styles.button}
             onPress={() => router.push("/UserHome")}
           >
             <Text style={styles.buttonText}>Go Back Home</Text>
@@ -82,9 +96,11 @@ export default function QuizMedium() {
         resizeMode={ResizeMode.COVER}
         shouldPlay
         isLooping
-        muted
+        isMuted
       />
+
       <View style={styles.overlay} />
+
       <ScrollView contentContainerStyle={styles.contentContainer}>
         {currentQ === 0 && (
           <View style={styles.instructions}>
@@ -97,13 +113,19 @@ export default function QuizMedium() {
         <Text style={styles.questionCount}>
           Question {currentQ + 1} of {mediumQuestions.length} | Time: {timer}s
         </Text>
-        <Text style={styles.questionText}>{currentQuestion.question}</Text>
+
+        <Text style={styles.questionText}>
+          {currentQuestion.question}
+        </Text>
 
         <View style={{ marginTop: 20 }}>
           {currentQuestion.options.map((option, index) => {
+
             const isSelected = option === selectedOption;
             const isCorrect = option === currentQuestion.answer;
+
             let optionStyle = styles.optionButton;
+
             if (selectedOption) {
               optionStyle = isCorrect
                 ? styles.correctOption
@@ -122,58 +144,125 @@ export default function QuizMedium() {
                 <Text style={styles.optionText}>{option}</Text>
               </TouchableOpacity>
             );
+
           })}
         </View>
+
       </ScrollView>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#0f2027" },
-  overlay: { 
-    ...StyleSheet.absoluteFillObject, 
-    backgroundColor: "rgba(15,32,39,0.7)" 
+
+  container: {
+    flex: 1,
+    backgroundColor: "#0f2027"
   },
-  contentContainer: { 
-    padding: 20, 
-    minHeight: height, 
-    justifyContent: "center" 
+
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "rgba(15,32,39,0.7)"
   },
-  instructions: { 
-    marginBottom: 20, 
-    backgroundColor: "rgba(32,58,67,0.9)", 
-    padding: 15, 
-    borderRadius: 15 
+
+  contentContainer: {
+    padding: 20,
+    minHeight: height,
+    justifyContent: "center"
   },
-  instructionText: { color: "#fff", fontSize: 16, textAlign: "center" },
-  questionCount: { color: "#fff", fontSize: 16, marginBottom: 10, textAlign: "center" },
-  questionText: { color: "#fff", fontSize: 24, fontWeight: "bold", textAlign: "center" },
-  optionButton: { 
-    backgroundColor: "rgba(32,58,67,0.9)", 
-    padding: 15, 
-    borderRadius: 15, 
+
+  instructions: {
+    marginBottom: 20,
+    backgroundColor: "rgba(32,58,67,0.9)",
+    padding: 15,
+    borderRadius: 15
+  },
+
+  instructionText: {
+    color: "#fff",
+    fontSize: 16,
+    textAlign: "center"
+  },
+
+  questionCount: {
+    color: "#fff",
+    fontSize: 16,
+    marginBottom: 10,
+    textAlign: "center"
+  },
+
+  questionText: {
+    color: "#fff",
+    fontSize: 24,
+    fontWeight: "bold",
+    textAlign: "center"
+  },
+
+  optionButton: {
+    backgroundColor: "rgba(32,58,67,0.9)",
+    padding: 15,
+    borderRadius: 15,
     marginBottom: 15,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.3,
-    shadowRadius: 4,
+    shadowRadius: 4
   },
-  correctOption: { 
-    backgroundColor: "#4caf50", 
-    padding: 15, 
-    borderRadius: 15, 
-    marginBottom: 15 
+
+  correctOption: {
+    backgroundColor: "#4caf50",
+    padding: 15,
+    borderRadius: 15,
+    marginBottom: 15,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4
   },
-  wrongOption: { 
-    backgroundColor: "#f44336", 
-    padding: 15, 
-    borderRadius: 15, 
-    marginBottom: 15 
+
+  wrongOption: {
+    backgroundColor: "#f44336",
+    padding: 15,
+    borderRadius: 15,
+    marginBottom: 15,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4
   },
-  optionText: { color: "#fff", fontSize: 18, textAlign: "center" },
-  scoreContainer: { flex: 1, justifyContent: "center", alignItems: "center", padding: 20 },
-  scoreText: { color: "#fff", fontSize: 26, fontWeight: "bold", textAlign: "center", marginBottom: 25 },
-  button: { backgroundColor: "#4286f4", padding: 15, borderRadius: 15, alignItems: "center", width: "60%" },
-  buttonText: { color: "#fff", fontSize: 18 },
+
+  optionText: {
+    color: "#fff",
+    fontSize: 18,
+    textAlign: "center"
+  },
+
+  scoreContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 20
+  },
+
+  scoreText: {
+    color: "#fff",
+    fontSize: 26,
+    fontWeight: "bold",
+    textAlign: "center",
+    marginBottom: 25
+  },
+
+  button: {
+    backgroundColor: "#4286f4",
+    padding: 15,
+    borderRadius: 15,
+    alignItems: "center",
+    width: "60%"
+  },
+
+  buttonText: {
+    color: "#fff",
+    fontSize: 18
+  }
+
 });
